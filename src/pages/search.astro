@@ -1,0 +1,52 @@
+---
+import Base from "../layouts/Base.astro";
+import Related from "../components/Related.astro";
+---
+<Base
+  title="A–Z Index — every RimWorld entry"
+  description="Complete A–Z index of RimWorld weapons, apparel, food and animals with live client-side search."
+>
+  <h1>A–Z Index — RimWorld</h1>
+  <p class="muted">All entries across every board. Type to filter instantly.</p>
+  <input id="q" type="search" placeholder="Search all entries..." style="width:100%;max-width:420px;margin:0.75rem 0 1rem" />
+  <div id="grid" class="grid grid-3"></div>
+  <p class="muted" id="count" style="font-size:0.85rem"></p>
+  <script>
+    const grid = document.getElementById("grid");
+    const q = document.getElementById("q");
+    const count = document.getElementById("count");
+    let entries = [];
+    fetch("/search-index.json")
+      .then((r) => r.json())
+      .then((data) => {
+        entries = data;
+        render();
+      });
+    const render = () => {
+      const query = q ? q.value.trim().toLowerCase() : "";
+      const rows = query
+        ? entries.filter((e) => e.title.toLowerCase().includes(query))
+        : entries;
+      grid.innerHTML = rows
+        .slice(0, 400)
+        .map(
+          (e) =>
+            `<a class="related-card" href="${e.href}">` +
+            (e.icon ? `<img src="/icons/${e.icon}" alt="" width="38" height="38" loading="lazy" />` : "") +
+            `<div><div class="rc-title">${e.title}</div><div class="rc-sub">${e.sub}</div></div></a>`
+        )
+        .join("");
+      count.textContent = `${rows.length} entries${rows.length > 400 ? " (showing first 400 — refine your search)" : ""}`;
+    };
+    if (q) q.addEventListener("input", render);
+  </script>
+  <Related
+    heading="Boards"
+    links={[
+      { href: "/weapons/", title: "Weapons", sub: "Damage & armor pen" },
+      { href: "/armor/", title: "Armor", sub: "Armor value & resistances" },
+      { href: "/thralls/", title: "Thralls & Creatures", sub: "HP, armor, XP" },
+      { href: "/consumables/", title: "Consumables", sub: "Heals, food & drink" },
+    ]}
+  />
+</Base>

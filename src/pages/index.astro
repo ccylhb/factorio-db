@@ -1,0 +1,57 @@
+---
+import Base from "../layouts/Base.astro";
+import Related from "../components/Related.astro";
+import items from "../data/factorio_items.json";
+
+const total = items.length;
+const withRecipe = items.filter((x) => x.time && (x.ingredients || []).length > 0);
+const fastest = withRecipe.slice().sort((a, b) => a.time - b.time)[0];
+---
+<Base title="FactorioDB — Factorio recipes, craft times & production rates" description={`Factorio stats database: ${total} entries — crafting recipes with exact times and ingredients, stack sizes, producers and per-minute rates with a production calculator.`}>
+  <div style="text-align:center;margin:2.5rem 0 2rem">
+    <h1 style="font-size:clamp(2.2rem,6vw,3.4rem)">Automate everything, by the numbers.</h1>
+    <p class="muted" style="font-size:1.15rem;max-width:640px;margin:0.75rem auto">
+      {total} Factorio entries with exact values — every recipe, every craft time, every rate.
+    </p>
+    <p style="margin-top:1.5rem">
+      <a href="/items/" style="display:inline-block;background:var(--accent);color:var(--bg);font-weight:700;padding:0.7rem 1.4rem;border-radius:10px;margin:0.25rem">Items & recipes</a>
+      <a href="/production-calculator/" style="display:inline-block;border:1px solid var(--accent);color:var(--accent);font-weight:700;padding:0.7rem 1.4rem;border-radius:10px;margin:0.25rem">Production Calculator</a>
+    </p>
+  </div>
+
+  <div class="grid grid-3" style="margin:2rem 0">
+    <a class="card" href="/items/" style="color:inherit">
+      <div class="stat-num">{items.length}</div>
+      <div class="stat-label">Items · recipes</div>
+      <p class="muted" style="font-size:0.9rem">Craft times, ingredients and per-minute rates.</p>
+    </a>
+    <a class="card" href="/items/" style="color:inherit">
+      <div class="stat-num">{withRecipe.length}</div>
+      <div class="stat-label">Craftable items</div>
+      <p class="muted" style="font-size:0.9rem">Every recipe parsed with exact ingredient counts.</p>
+    </a>
+    <a class="card" href="/rankings/" style="color:inherit">
+      <div class="stat-num">{fastest ? fastest.time : 0}s</div>
+      <div class="stat-label">Fastest craft</div>
+      <p class="muted" style="font-size:0.9rem">{fastest?.title} — see all leaderboards.</p>
+    </a>
+  </div>
+
+  <h2>Jump to the answer</h2>
+  <div class="card answer-card">
+    <ul style="margin:0;padding-left:1.2rem;line-height:2">
+      <li>Iron plate: 3.2s per plate — <a href="/items/iron-plate/">full recipe</a></li>
+      <li>Planning a line: <a href="/production-calculator/">Production Calculator</a> gives machines + ingredient rates</li>
+      <li>Leaderboards: <a href="/rankings/">fastest, slowest, most complex recipes</a></li>
+    </ul>
+  </div>
+
+  <Related
+    heading="All boards"
+    links={[
+      { href: "/items/", title: "Items", sub: `${items.length} entries` },
+      { href: "/rankings/", title: "Rankings", sub: "Leaderboards" },
+      { href: "/production-calculator/", title: "Production Calculator", sub: "Per-minute rates", tool: true },
+    ]}
+  />
+</Base>

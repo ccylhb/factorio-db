@@ -1,0 +1,26 @@
+---
+// Generic entry stat highlights for LongDarkDB detail pages.
+interface Props {
+  entry: Record<string, any>;
+  keys: string[]; // field keys to show, in order (short values only)
+  labels?: Record<string, string>;
+}
+const { entry, keys, labels = {} } = Astro.props;
+const f = entry.fields || {};
+const shown = keys
+  .map((k) => ({ k, v: f[k] }))
+  .filter((s) => s.v !== undefined && s.v !== "" && String(s.v).length <= 40)
+  .map((s) => ({ ...s, label: labels[s.k] || s.k }));
+---
+{shown.length > 0 && (
+  <div class="card answer-card" style="margin:1rem 0">
+    <div class="stat-row">
+      {shown.map((s) => (
+        <div>
+          <div class="stat-num" style="font-size:1.35rem">{s.v}</div>
+          <div class="stat-label">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}

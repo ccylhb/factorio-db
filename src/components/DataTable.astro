@@ -1,0 +1,104 @@
+---
+// Generic data-driven table component with client-side search & sort.
+// Usage:
+//   <DataTable rows={rows} columns={[{key:'name',label:'Name'},{key:'hp',label:'HP',type:'number'}]} />
+interface Column {
+  key: string;
+  label: string;
+  type?: "string" | "number";
+  href?: string; // key containing a URL, if present the first column links to it
+}
+
+interface Props {
+  rows: Record<string, any>[];
+  columns: Column[];
+  searchPlaceholder?: string;
+  id?: string;
+}
+
+const { rows: rawRows, columns: rawColumns, searchPlaceholder = "Search...", id = "dt" } = Astro.props;
+
+// Legacy array mode: head={["A","B"]} rows={[["v1","v2"], ...]} (cells may contain inline HTML)
+let rows = rawRows;
+let columns = rawColumns;
+if (Astro.props.head) {
+  const head = Astro.props.head as string[];
+  columns = head.map((label, i) => ({ key: "c" + i, label }));
+  rows = (Astro.props.rows as unknown[][]).map((r) =>
+    Object.fromEntries((r as unknown[]).map((v, i) => ["c" + i, v]))
+  );
+}
+const tableId = `table-${id}`;
+const searchId = `search-${id}`;
+---
+
+<div class="dt-wrap">
+  <input type="search" id={searchId} placeholder={searchPlaceholder} style="width:100%;max-width:360px;margin-bottom:0.75rem" />
+  <div style="overflow-x:auto">
+    <table id={tableId}>
+      <thead>
+        <tr>
+          {columns.map((c) => (
+            <th data-key={c.key} data-type={c.type || "string"} style="cursor:pointer;user-select:none">
+              {c.label} <span class="sort-ind"></span>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            {columns.map((c, i) => (
+              <td data-value={String(r[c.key] ?? "")} set:html={String(r[c.key] ?? "")} />
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted dt-count" style="font-size:0.85rem;margin:0.5rem 0 0"></p>
+</div>
+
+<script define:vars={{ tableId, searchId }}>
+  const table = document.getElementById(tableId);
+  const search = document.getElementById(searchId);
+  const tbody = table.querySelector("tbody");
+  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  const count = table.closest(".dt-wrap").querySelector(".dt-count");
+  const render = (rows) => {
+    rows.forEach((r) => tbody.appendChild(r));
+    allRows.forEach((r) => { if (!rows.includes(r)) r.remove(); });
+    count.textContent = rows.length + " / " + allRows.length + " items";
+  };
+  const matches = (row, q) =>
+    Array.from(row.querySelectorAll("td")).some((td) =>
+      (td.dataset.value || "").toLowerCase().includes(q)
+    );
+  search.addEventListener("input", () => {
+    const q = search.value.trim().toLowerCase();
+    render(q ? allRows.filter((r) => matches(r, q)) : allRows);
+  });
+  // column sort
+  let sortKey = null, sortDir = 1;
+  table.querySelectorAll("th").forEach((th) => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.key;
+      const isNum = th.dataset.type === "number";
+      if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+      const idx = Array.from(th.parentElement.children).indexOf(th);
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort((a, b) => {
+        const av = a.children[idx].dataset.value || "";
+        const bv = b.children[idx].dataset.value || "";
+        const cmp = isNum
+          ? (parseFloat(av) || 0) - (parseFloat(bv) || 0)
+          : av.localeCompare(bv);
+        return cmp * sortDir;
+      });
+      rows.forEach((r) => tbody.appendChild(r));
+      table.querySelectorAll(".sort-ind").forEach((s) => (s.textContent = ""));
+      th.querySelector(".sort-ind").textContent = sortDir === 1 ? "▲" : "▼";
+    });
+  });
+  count.textContent = allRows.length + " items";
+</script>

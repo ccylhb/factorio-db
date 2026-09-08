@@ -1,0 +1,187 @@
+---
+// Config-driven base layout — one file, any site. All branding comes from site.config.json.
+import site from "../../site.config.json";
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description = site.description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.siteUrl);
+const fullTitle = title.includes(site.siteName) ? title : `${title} - ${site.siteName}`;
+const t = site.theme;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${site.adsenseClientId}`} crossorigin="anonymous"></script>
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content={t.bg} />
+    <link rel="icon" href={`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${site.favicon}</text></svg>`} />
+    <style is:inline set:html={`:root { --bg: ${t.bg}; --bg-soft: ${t.bgSoft}; --card: ${t.card}; --border: ${t.border}; --text: ${t.text}; --muted: ${t.muted}; --accent: ${t.accent}; --accent-2: ${t.accent2}; --good: ${t.good}; --bad: ${t.bad}; }`}></style>
+    <style is:global>
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+      }
+      a { color: var(--accent-2); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      header.site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 92%, transparent);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--border);
+      }
+      .header-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0.7rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: var(--accent);
+        letter-spacing: 0.3px;
+      }
+      nav.main-nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+      nav.main-nav a {
+        color: var(--muted);
+        padding: 0.3rem 0.7rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+      nav.main-nav a:hover { color: var(--text); background: var(--bg-soft); text-decoration: none; }
+      nav.main-nav a.navtool {
+        color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+        font-weight: 600;
+      }
+      nav.main-nav a.navtool:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+      .icon-h1 { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+      .icon-h1 img { width: 52px; height: 52px; object-fit: contain; flex: none; }
+      .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
+      a.related-card {
+        display: flex; align-items: center; gap: 0.7rem;
+        background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+        padding: 0.7rem 0.85rem; color: inherit;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+      }
+      a.related-card:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+      a.related-card img { width: 38px; height: 38px; object-fit: contain; flex: none; }
+      a.related-card .rc-title { font-weight: 600; font-size: 0.95rem; }
+      a.related-card .rc-sub { color: var(--muted); font-size: 0.82rem; }
+      a.related-card.tool-card {
+        border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+        background: color-mix(in srgb, var(--accent) 10%, var(--card));
+      }
+      a.related-card.tool-card .rc-badge {
+        display: inline-block; background: var(--accent); color: var(--bg);
+        border-radius: 999px; padding: 0.05rem 0.5rem; font-size: 0.7rem; font-weight: 700;
+        margin-left: 0.4rem; vertical-align: middle;
+      }
+      main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+      footer.site-footer {
+        border-top: 1px solid var(--border);
+        padding: 1.5rem 1rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-align: center;
+      }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 0.5rem; }
+      h2 { margin: 2rem 0 0.75rem; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+      .grid { display: grid; gap: 1rem; }
+      .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+      .tag {
+        display: inline-block;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.78rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 0.92rem;
+      }
+      th, td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); }
+      th { background: var(--bg-soft); color: var(--muted); font-weight: 600; }
+      tr:last-child td { border-bottom: none; }
+      input, select, button {
+        font: inherit;
+        color: var(--text);
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+      }
+      button { background: var(--accent); color: var(--bg); font-weight: 600; cursor: pointer; }
+      button:hover { filter: brightness(1.08); }
+      .muted { color: var(--muted); }
+      .answer-card { background: color-mix(in srgb, var(--accent) 8%, var(--card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
+      .stat-row { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+      .stat-num { font-size: 1.7rem; font-weight: 700; color: var(--text); line-height: 1.15; }
+      .stat-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+      .toc { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+      .toc ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+      @media (max-width: 640px) {
+        .header-inner { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="brand">{site.siteName}</a>
+        <nav class="main-nav">
+          {site.nav.map((item) => <a href={item.href} class={item.tool ? "navtool" : undefined}>{item.label}</a>)}
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p style="margin:0 0 0.4rem">{site.footerNote}</p>
+      <p style="margin:0">
+        © {new Date().getFullYear()} {site.siteName} · <a href="/privacy-policy/">Privacy Policy</a> · <a href="/about/">About</a>
+      </p>
+    </footer>
+  </body>
+</html>

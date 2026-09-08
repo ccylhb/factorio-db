@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import site from "../../site.config.json";
+---
+
+<Base title="About" description={`What ${site.siteName} is and how the data is maintained.`}>
+  <h1>About {site.siteName}</h1>
+  <div class="card">
+    <p>{site.siteName} is an independent fan-made database and guide site. We are not affiliated with the game's publisher.</p>
+    <p>Data is compiled from in-game observations and community wikis, and updated after major patches.</p>
+    <p>Found an error? Reach out via the contact page.</p>
+  </div>
+</Base>

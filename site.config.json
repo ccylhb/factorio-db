@@ -1,0 +1,28 @@
+{
+  "siteName": "FactorioDB",
+  "siteUrl": "https://factorio-db.pages.dev",
+  "tagline": "Factorio database — recipes, craft times & production rates",
+  "description": "Factorio stats: crafting recipes with times and ingredients, stack sizes, producers and per-minute rates for 300+ items — with a production calculator.",
+  "adsenseClientId": "ca-pub-3245910354455258",
+  "adsensePublisherId": "pub-3245910354455258",
+  "favicon": "🏭",
+  "footerNote": "Unofficial fan-made database for Factorio. Not affiliated with Wube Software.",
+  "theme": {
+    "bg": "#101418",
+    "bgSoft": "#161b21",
+    "card": "#1d242c",
+    "border": "#313b45",
+    "text": "#e3e8ed",
+    "muted": "#93a0ac",
+    "accent": "#ff8a2a",
+    "accent2": "#ffab5e",
+    "good": "#7fb069",
+    "bad": "#c75146"
+  },
+  "nav": [
+    { "href": "/items/", "label": "Items" },
+    { "href": "/rankings/", "label": "Rankings" },
+    { "href": "/production-calculator/", "label": "Production Calculator", "tool": true },
+    { "href": "/search/", "label": "A-Z" }
+  ]
+}

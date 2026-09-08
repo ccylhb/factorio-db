@@ -1,0 +1,47 @@
+---
+import Base from "../../layouts/Base.astro";
+import Related from "../../components/Related.astro";
+import EntryStats from "../../components/EntryStats.astro";
+import items from "../../data/factorio_items.json";
+
+export function getStaticPaths() {
+  return items.map((x) => ({ params: { slug: x.slug }, props: { x } }));
+}
+
+const { x } = Astro.props;
+const f = x;
+const perMin = x.time ? Math.round((60 / x.time) * 10) / 10 : "";
+const similar = items
+  .filter((o) => o.slug !== x.slug && (o.category || "") === (x.category || ""))
+  .slice(0, 6);
+---
+<Base
+  title={`${x.title} — Factorio recipe & craft time (${x.time ? x.time + "s" : "no recipe"})`}
+  description={`${x.title}: craft time ${x.time ?? "?"}s, ingredients ${(x.ingredients || []).map((i) => i.qty + "× " + i.name).join(" + ") || "—"}, stack ${x.stack_size ?? "?"} — Factorio recipe values.`}
+>
+  <h1 class="icon-h1">
+    {x.icon_file ? <img src={`/icons/${x.icon_file}`} alt={x.title} loading="eager" /> : null}
+    <span>{x.title}</span>
+  </h1>
+  {x.intro && <p>{x.intro}</p>}
+  <EntryStats entry={x} keys={["time", "stack_size", "category", "producers"]} labels={{ time: "Craft time (s)", stack_size: "Stack size", category: "Category", producers: "Made in" }} />
+  {(x.ingredients || []).length > 0 && (
+    <p>
+      <strong>Ingredients:</strong>
+      {x.ingredients.map((i) => <span class="tag" style="margin:0.1rem">{i.qty}× {i.name}</span>)}
+    </p>
+  )}
+  {perMin && <p><strong>Output:</strong> 1 per craft → <strong>{perMin}/min</strong> (single machine, no modules)</p>}
+  <Related
+    links={[
+      ...similar.map((s) => ({
+        href: `/items/${s.slug}/`,
+        title: s.title,
+        sub: s.time ? `${s.time}s craft` : "no recipe",
+        icon: s.icon_file ? `/icons/${s.icon_file}` : undefined,
+      })),
+      { href: "/items/", title: "All Items", sub: "Sortable rates table" },
+      { href: "/production-calculator/", title: "Production Calculator", sub: "Per-minute rates", tool: true },
+    ]}
+  />
+</Base>

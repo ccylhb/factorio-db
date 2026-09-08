@@ -1,0 +1,48 @@
+---
+import Base from "../../layouts/Base.astro";
+import DataTable from "../../components/DataTable.astro";
+import Related from "../../components/Related.astro";
+import items from "../../data/factorio_items.json";
+
+const rows = items
+  .map((x) => {
+    const perMin = x.time ? Math.round((60 / x.time) * 10) / 10 : "";
+    const ing = (x.ingredients || []).map((i) => `${i.qty}× ${i.name}`).join(" + ").slice(0, 70);
+    return {
+      name: `<a href="/items/${x.slug}/">${x.title}</a>${x.icon_file ? ` <img src="/icons/${x.icon_file}" alt="" width="22" height="22" style="vertical-align:middle" loading="lazy" />` : ""}`,
+      _sort: x.title.toLowerCase(),
+      perMin,
+      time: x.time ?? "",
+      ing,
+      stack: x.stack_size ?? "",
+      category: (x.category || "").slice(0, 24),
+    };
+  })
+  .sort((a, b) => a._sort.localeCompare(b._sort));
+---
+<Base
+  title={`Factorio Items — ${items.length} items with recipes, craft times & rates`}
+  description={`Factorio item database: crafting recipes with exact craft times, ingredients per craft, stack sizes and per-minute rates for ${items.length} items.`}
+>
+  <h1>Items</h1>
+  <p class="muted">{items.length} items · craft time (s), ingredients per craft and per-minute output. Click a column to sort.</p>
+  <DataTable
+    id="items"
+    rows={rows}
+    searchPlaceholder="Search items..."
+    columns={[
+      { key: "name", label: "Item" },
+      { key: "perMin", label: "Per minute", type: "number" },
+      { key: "time", label: "Craft time (s)", type: "number" },
+      { key: "ing", label: "Ingredients" },
+      { key: "stack", label: "Stack", type: "number" },
+      { key: "category", label: "Category" },
+    ]}
+  />
+  <Related
+    links={[
+      { href: "/production-calculator/", title: "Production Calculator", sub: "Per-minute rates", tool: true },
+      { href: "/rankings/", title: "Rankings", sub: "Fastest recipes" },
+    ]}
+  />
+</Base>

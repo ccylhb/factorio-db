@@ -1,0 +1,34 @@
+---
+interface RelLink {
+  href: string;
+  title: string;
+  sub?: string;
+  icon?: string;
+  tool?: boolean;
+}
+interface Props {
+  heading?: string;
+  links: RelLink[];
+}
+const { heading = "Related", links = [] } = Astro.props;
+---
+
+{links.length > 0 && (
+  <section style="margin-top:2rem">
+    <h2 style="margin-top:0">{heading}</h2>
+    <div class="related-grid">
+      {links.map((l) => (
+        <a class={`related-card${l.tool ? " tool-card" : ""}`} href={l.href}>
+          {l.icon ? <img src={l.icon} alt="" width="38" height="38" loading="lazy" /> : null}
+          <div>
+            <div class="rc-title">
+              {l.title}
+              {l.tool && <span class="rc-badge">Tool</span>}
+            </div>
+            {l.sub && <div class="rc-sub">{l.sub}</div>}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

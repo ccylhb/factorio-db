@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import site from "../../site.config.json";
+---
+
+<Base title="Privacy Policy" description={`Privacy policy of ${site.siteName}.`}>
+  <h1>Privacy Policy</h1>
+  <div class="card">
+    <p>Last updated: {new Date().toISOString().slice(0, 10)}</p>
+    <p>We use Google AdSense to serve ads. Google, as a third-party vendor, uses cookies (including the DART cookie) to serve ads based on your visits to this and other sites.</p>
+    <p>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a>.</p>
+    <p>This site does not collect, store, or share any personal information beyond what is strictly necessary for ad serving and anonymous traffic analytics.</p>
+    <p>Contact: available on request.</p>
+  </div>
+</Base>

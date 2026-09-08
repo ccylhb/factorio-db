@@ -1,0 +1,72 @@
+---
+import Base from "../layouts/Base.astro";
+import Related from "../components/Related.astro";
+import items from "../data/factorio_items.json";
+
+const entries = items
+  .filter((x) => x.time && (x.ingredients || []).length > 0)
+  .map((x) => ({
+    slug: x.slug,
+    name: x.title,
+    icon: x.icon_file || "",
+    time: x.time,
+    ingredients: x.ingredients,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+---
+<Base
+  title="Factorio Production Calculator — per-minute crafting rates"
+  description="Factorio production calculator: pick an item to see exact per-minute ingredient consumption and output for a target rate. Perfect for planning smelting and assembly lines."
+>
+  <h1>Production Calculator</h1>
+  <p class="muted">Pick an item and set your target output — get machines needed and per-minute ingredient consumption. Assumes 1 output per craft, 100% speed, no modules.</p>
+
+  <div class="card" style="margin:1rem 0">
+    <input id="q" type="search" placeholder="Filter items..." style="width:100%;max-width:320px;margin:0.5rem 0" />
+    <select id="item" size="12" style="width:100%">
+      {entries.map((x) => <option value={x.slug}>{x.name} ({x.time}s)</option>)}
+    </select>
+    <label style="display:block;margin:0.75rem 0">Target output per minute: <input id="rate" type="number" value="60" min="0.1" step="0.5" style="width:90px" /></label>
+    <div id="result"></div>
+  </div>
+
+  <script define:vars={{ entries }}>
+    const bySlug = Object.fromEntries(entries.map((x) => [x.slug, x]));
+    const q = document.getElementById("q");
+    const itemSel = document.getElementById("item");
+    const rateEl = document.getElementById("rate");
+    const result = document.getElementById("result");
+    const render = () => {
+      const it = bySlug[itemSel.value];
+      if (!it) { result.innerHTML = ""; return; }
+      const rate = parseFloat(rateEl.value) || 0;
+      const machines = rate * it.time / 60;
+      let html = `<div class="stat-row" style="margin:0.5rem 0">
+        <div><div class="stat-num">${Math.round(machines * 100) / 100}</div><div class="stat-label">machines needed</div></div>
+      </div>`;
+      html += `<p style="margin:0.3rem 0"><strong>Ingredients consumed per minute:</strong></p><p>`;
+      it.ingredients.forEach((ing) => {
+        const perMin = ing.qty * rate;
+        html += `<span class="tag" style="margin:0.1rem">${ing.qty}× ${ing.name} → ${Math.round(perMin * 10) / 10}/min</span>`;
+      });
+      html += `</p>`;
+      result.innerHTML = html;
+    };
+    q.addEventListener("input", () => {
+      const v = q.value.trim().toLowerCase();
+      Array.from(itemSel.options).forEach((o) => {
+        o.hidden = v && !o.textContent.toLowerCase().includes(v);
+      });
+    });
+    itemSel.addEventListener("change", render);
+    rateEl.addEventListener("input", render);
+    render();
+  </script>
+
+  <Related
+    links={[
+      { href: "/items/", title: "Items", sub: "All recipes" },
+      { href: "/rankings/", title: "Rankings", sub: "Fastest recipes" },
+    ]}
+  />
+</Base>
