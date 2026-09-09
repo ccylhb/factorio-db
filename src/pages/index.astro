@@ -1,6 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 import Related from "../components/Related.astro";
+import updates from "../data/updates.json";
+
 import items from "../data/factorio_items.json";
 
 const total = items.length;
@@ -35,6 +37,14 @@ const fastest = withRecipe.slice().sort((a, b) => a.time - b.time)[0];
       <div class="stat-label">Fastest craft</div>
       <p class="muted" style="font-size:0.9rem">{fastest?.title} — see all leaderboards.</p>
     </a>
+  </div>
+
+
+  <h2>What changed</h2>
+  <div class="card updates-card">
+    {updates.slice(0, 5).map((u) => (
+      <p class="update-line"><span class="dot">●</span> <a href={u.href}>{u.text}</a> <span class="muted">— {u.date}</span></p>
+    ))}
   </div>
 
   <h2>Jump to the answer</h2>
