@@ -8,6 +8,18 @@ import items from "../data/factorio_items.json";
 const total = items.length;
 const withRecipe = items.filter((x) => x.time && (x.ingredients || []).length > 0);
 const fastest = withRecipe.slice().sort((a, b) => a.time - b.time)[0];
+const __ld = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "FactorioDB",
+  url: "https://factorio-db.pages.dev/",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: "https://factorio-db.pages.dev/search/?q={search_term_string}" },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 ---
 <Base title="FactorioDB — Factorio recipes, craft times & production rates" description={`Factorio stats database: ${total} entries — crafting recipes with exact times and ingredients, stack sizes, producers and per-minute rates with a production calculator.`}>
   <div style="text-align:center;margin:2.5rem 0 2rem">
@@ -64,4 +76,5 @@ const fastest = withRecipe.slice().sort((a, b) => a.time - b.time)[0];
       { href: "/production-calculator/", title: "Production Calculator", sub: "Per-minute rates", tool: true },
     ]}
   />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(__ld)}></script>
 </Base>

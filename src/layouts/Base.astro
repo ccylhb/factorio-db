@@ -24,6 +24,8 @@ const t = site.theme;
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
     <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${site.adsenseClientId}`} crossorigin="anonymous"></script>
+    <meta property="og:site_name" content={site.siteName} />
+    <meta name="twitter:card" content="summary" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />

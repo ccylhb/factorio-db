@@ -17,6 +17,16 @@ const rows = data.slice(0, 80).map((x: any) => ({
     ings: (x.ingredients || []).map((i: any) => `${i.qty}× ${i.name}`).join(" + ").slice(0, 80),
     time: x.time,
   }));
+const __ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `Most Complex Recipes — Ingredient Count`,
+    description: `Factorio recipes ranked by how many different ingredients and how many total items they demand — the production bottlenecks to plan around.`,
+    mainEntityOfPage: "https://factorio-db.pages.dev/complex-recipes/",
+  },
+];
+
 ---
 <Base
   title={`Most Complex Recipes — Ingredient Count`}
@@ -37,4 +47,5 @@ const rows = data.slice(0, 80).map((x: any) => ({
       { key: "time", label: "Craft sec", type: "number" },
     ]}
   />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(__ld)}></script>
 </Base>

@@ -19,6 +19,23 @@ const rows = items
     };
   })
   .sort((a, b) => a._sort.localeCompare(b._sort));
+const __ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://factorio-db.pages.dev/" },
+      { "@type": "ListItem", position: 2, name: "Items", item: "https://factorio-db.pages.dev/items/" },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Items",
+    mainEntityOfPage: "https://factorio-db.pages.dev/items/",
+  },
+];
+
 ---
 <Base
   title={`Factorio Items — ${items.length} items with recipes, craft times & rates`}
@@ -45,4 +62,5 @@ const rows = items
       { href: "/rankings/", title: "Rankings", sub: "Fastest recipes" },
     ]}
   />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(__ld)}></script>
 </Base>

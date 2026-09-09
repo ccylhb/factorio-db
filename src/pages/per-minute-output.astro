@@ -16,6 +16,16 @@ const rows = data.slice(0, 80).map((x: any) => ({
     stack: x.stack_size,
     cat: (x.category || "").slice(0, 16),
   }));
+const __ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `Output per Minute — Single-Machine Rates`,
+    description: `Factorio items ranked by how many you craft per minute in one assembler at full craft speed — the backbone of every bus and mall.`,
+    mainEntityOfPage: "https://factorio-db.pages.dev/per-minute-output/",
+  },
+];
+
 ---
 <Base
   title={`Output per Minute — Single-Machine Rates`}
@@ -36,4 +46,5 @@ const rows = data.slice(0, 80).map((x: any) => ({
       { key: "cat", label: "Category" },
     ]}
   />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(__ld)}></script>
 </Base>

@@ -17,6 +17,25 @@ const similar = items
   .filter((o) => o.slug !== x.slug && (o.category || "") === (x.category || ""))
   .slice(0, 6);
 const ihtml = introHtml(x.intro, mesh, x.title);
+const __slug = Astro.params.slug;
+const __ld = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://factorio-db.pages.dev/" },
+      { "@type": "ListItem", position: 2, name: "Items", item: "https://factorio-db.pages.dev/items/" },
+      { "@type": "ListItem", position: 3, name: x.title },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: x.title,
+    description: (x.intro || "").slice(0, 160),
+    mainEntityOfPage: "https://factorio-db.pages.dev" + "/items/" + __slug + "/",
+  },
+];
 ---
 <Base
   title={`${x.title} — Factorio recipe & craft time (${x.time ? x.time + "s" : "no recipe"})`}
@@ -49,4 +68,5 @@ const ihtml = introHtml(x.intro, mesh, x.title);
       { href: "/rankings/", title: "Rankings", sub: "Best picks" },
     ]}
   />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(__ld)}></script>
 </Base>
