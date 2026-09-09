@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+import DataTable from "../components/DataTable.astro";
+import items from "../data/factorio_items.json";
+const n = (v: any) => {
+  const m = String(v ?? "").match(/-?\d+(?:\.\d+)?/);
+  return m ? m[0] : "";
+};
+let data = items.filter((x: any) => x.time);
+data = data.sort((a: any, b: any) => (60 / b.time) - (60 / a.time));
+const rows = data.slice(0, 80).map((x: any) => ({
+    name: `<a href="/items/${x.slug}/">${x.title}</a>${x.icon_file ? ` <img src="/icons/${x.icon_file}" alt="" width="22" height="22" style="vertical-align:middle" loading="lazy" />` : ""}`,
+
+    perMin: String(Math.round((60 / x.time) * 10) / 10),
+    time: x.time,
+    stack: x.stack_size,
+    cat: (x.category || "").slice(0, 16),
+  }));
+---
+<Base
+  title={`Output per Minute — Single-Machine Rates`}
+  description={`Factorio items ranked by how many you craft per minute in one assembler at full craft speed — the backbone of every bus and mall.`}
+>
+  <h1>Output per Minute — Single-Machine Rates</h1>
+  <p class="muted">Factorio items ranked by how many you craft per minute in one assembler at full craft speed — the backbone of every bus and mall.</p>
+  
+  <DataTable
+    id="per-minute-output"
+    rows={rows as any}
+    searchPlaceholder="Filter..."
+    columns={[
+      { key: "name", label: "Item" },
+      { key: "perMin", label: "Per min", type: "number" },
+      { key: "time", label: "Craft sec", type: "number" },
+      { key: "stack", label: "Stack", type: "number" },
+      { key: "cat", label: "Category" },
+    ]}
+  />
+</Base>

@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+import DataTable from "../components/DataTable.astro";
+import items from "../data/factorio_items.json";
+const n = (v: any) => {
+  const m = String(v ?? "").match(/-?\d+(?:\.\d+)?/);
+  return m ? m[0] : "";
+};
+const ingTotal = (x: any) => (x.ingredients || []).reduce((s: number, i: any) => s + (i.qty || 0), 0);
+let data = items.filter((x: any) => (x.ingredients || []).length >= 2);
+data = data.sort((a: any, b: any) => ingTotal(b) - ingTotal(a));
+const rows = data.slice(0, 80).map((x: any) => ({
+    name: `<a href="/items/${x.slug}/">${x.title}</a>${x.icon_file ? ` <img src="/icons/${x.icon_file}" alt="" width="22" height="22" style="vertical-align:middle" loading="lazy" />` : ""}`,
+
+    parts: (x.ingredients || []).length,
+    total: ingTotal(x),
+    ings: (x.ingredients || []).map((i: any) => `${i.qty}× ${i.name}`).join(" + ").slice(0, 80),
+    time: x.time,
+  }));
+---
+<Base
+  title={`Most Complex Recipes — Ingredient Count`}
+  description={`Factorio recipes ranked by how many different ingredients and how many total items they demand — the production bottlenecks to plan around.`}
+>
+  <h1>Most Complex Recipes — Ingredient Count</h1>
+  <p class="muted">Factorio recipes ranked by how many different ingredients and how many total items they demand — the production bottlenecks to plan around.</p>
+  
+  <DataTable
+    id="complex-recipes"
+    rows={rows as any}
+    searchPlaceholder="Filter..."
+    columns={[
+      { key: "name", label: "Item" },
+      { key: "parts", label: "Different", type: "number" },
+      { key: "total", label: "Total items", type: "number" },
+      { key: "ings", label: "Ingredients" },
+      { key: "time", label: "Craft sec", type: "number" },
+    ]}
+  />
+</Base>
