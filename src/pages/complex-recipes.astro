@@ -1,4 +1,5 @@
 ---
+const SITE = Astro.site?.origin ?? "";
 import Base from "../layouts/Base.astro";
 import DataTable from "../components/DataTable.astro";
 import items from "../data/factorio_items.json";
@@ -23,7 +24,7 @@ const __ld = [
     "@type": "Article",
     headline: `Most Complex Recipes — Ingredient Count`,
     description: `Factorio recipes ranked by how many different ingredients and how many total items they demand — the production bottlenecks to plan around.`,
-    mainEntityOfPage: "https://factorio-db.pages.dev/complex-recipes/",
+    mainEntityOfPage: SITE + "/complex-recipes/",
   },
 ];
 

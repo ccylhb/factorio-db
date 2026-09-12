@@ -1,4 +1,5 @@
 ---
+const SITE = Astro.site?.origin ?? "";
 import Base from "../layouts/Base.astro";
 import DataTable from "../components/DataTable.astro";
 import items from "../data/factorio_items.json";
@@ -22,7 +23,7 @@ const __ld = [
     "@type": "Article",
     headline: `Output per Minute — Single-Machine Rates`,
     description: `Factorio items ranked by how many you craft per minute in one assembler at full craft speed — the backbone of every bus and mall.`,
-    mainEntityOfPage: "https://factorio-db.pages.dev/per-minute-output/",
+    mainEntityOfPage: SITE + "/per-minute-output/",
   },
 ];
 

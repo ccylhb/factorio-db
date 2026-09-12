@@ -1,4 +1,5 @@
 ---
+const SITE = Astro.site?.origin ?? "";
 import Base from "../layouts/Base.astro";
 import Related from "../components/Related.astro";
 import updates from "../data/updates.json";
@@ -12,10 +13,10 @@ const __ld = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "FactorioDB",
-  url: "https://factorio-db.pages.dev/",
+  url: SITE + "/",
   potentialAction: {
     "@type": "SearchAction",
-    target: { "@type": "EntryPoint", urlTemplate: "https://factorio-db.pages.dev/search/?q={search_term_string}" },
+    target: { "@type": "EntryPoint", urlTemplate: SITE + "/search/?q={search_term_string}" },
     "query-input": "required name=search_term_string",
   },
 };
