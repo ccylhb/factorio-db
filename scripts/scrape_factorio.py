@@ -242,6 +242,8 @@ def main():
             "ingredients": recipe["ingredients"],
             "intro": first_para(wts.get(t, "")),
             "image": clean(p.get("image", "")),
+            # frontend (items/[slug].astro 等) 依赖 icon_file；图标文件预置于 public/icons/
+            "icon_file": re.sub(r"[\s()]", "_", t) + ".png",
         }
         out.append(rec)
     path = os.path.join(DATA_DIR, "factorio_items.json")
