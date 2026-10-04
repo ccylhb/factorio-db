@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://factorio-db.pages.dev/sitemap.xml
+Sitemap: https://factorio.lootseer.com/sitemap.xml

@@ -99,18 +99,45 @@ def clean(v):
     v = re.sub(r"<br\s*/?>", "; ", v)
     v = re.sub(r"\{\{[^{}]*\}\}", "", v)
     v = re.sub(r"\[\[([^|\]]*\|)?([^\]]*)\]\]", r"\2", v)
+    # 裸外链：[[https://x label]] 形式保留标签，纯 [https://x] 直接去掉
+    v = re.sub(r"\[https?://\S+\s+([^\]]+)\]", r"\1", v)
+    v = re.sub(r"\[https?://\S+\]", "", v)
     v = v.replace("'''", "").replace("''", "")
+    # 兜底：清掉被截断的模板尾巴与孤立括号（残留形如 '… Hunger. }'）
+    v = re.sub(r"\{\{[^{}]*$", "", v)
+    v = v.replace("}", "").replace("{", "")
     return re.sub(r"\s+", " ", v).strip()
 
 
+def drop_leading_templates(t: str) -> str:
+    """按括号深度剥掉开头的连续模板块（含前置的 [[File:...]]）。
+
+    旧写法用 re.search 定位「第一个右括号对」来跳过 infobox：只要 infobox 里
+    有嵌套模板、或正文中出现内联模板，就会切在模板内部，正文变成 '}}' /
+    'to unlock.' / 'and 4 x |recoverytime=...' 这类残渣（跨站上千条）。
+    """
+    while True:
+        t = re.sub(r"^\s*\[\[(?:File|Image):[^\]]*\]\]\s*", "", t)
+        m = re.search(r"\{\{", t)
+        if not m or t[: m.start()].strip():
+            return t
+        depth, j = 0, m.start()
+        while j < len(t):
+            if t[j] == "{":
+                depth += 1
+            elif t[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        t = t[: m.start()] + t[j + 1 :]
+
+
 def first_para(wt):
-    body = strip_comments(wt)
-    m = re.search(r"\}\}", body)
-    if m:
-        body = body[m.end():]
+    body = drop_leading_templates(strip_comments(wt))
     for ln in body.splitlines():
         ln = ln.strip()
-        if ln and not ln.startswith(("=", "{", "|", "[[", "<", "#", "'")):
+        if ln and not ln.startswith(("=", "{", "|", "[[", "<", "#", "'", "!")):
             return clean(ln)[:400]
     return ""
 
@@ -144,6 +171,27 @@ def cat_members(cat):
         if not cont:
             return titles
         time.sleep(0.4)
+
+
+# --- wiki 魔术字展开 ---------------------------------------------------------
+# clean() 用 re.sub(r"\{\{[^{}]*\}\}", "", v) 整段删无名模板，{{PAGENAME}}（条目名）
+# 随之消失，正文出现 "The is a ..." 残句。必须在清洗前展开成真实文本。
+_MAGIC_TITLE = re.compile(r"\{\{\s*(?:SUB|BASE|FULL)?PAGENAME(?:E)?\s*\}\}", re.I)
+_MAGIC_GAME = re.compile(r"\{\{\s*(?:Gamename|Game|SITENAME|Sitename)\s*\}\}", re.I)
+_MAGIC_DROP = re.compile(
+    r"\{\{\s*(?:DISPLAYTITLE|DEFAULTSORT|#(?:expr|var|if|ifeq|ifexist|switch|tag|invoke|time|pos|len|replace|sub|explode|titleparts)[^}]*)\}\}",
+    re.I,
+)
+
+
+def expand_magic(wt, title):
+    """把 {{PAGENAME}} 换成条目名，丢弃解析器函数等元魔术字。"""
+    if not wt:
+        return wt
+    wt = _MAGIC_TITLE.sub(lambda _m: title, wt)
+    wt = _MAGIC_GAME.sub("Factorio", wt)
+    wt = _MAGIC_DROP.sub("", wt)
+    return wt
 
 
 def fetch_wikitexts(titles, cache_path):
@@ -218,6 +266,9 @@ def main():
     wts = fetch_wikitexts(titles, page_cache)
     ibox_titles = ["Infobox:" + t for t in titles]
     ibox_wts = fetch_wikitexts(ibox_titles, ibox_cache)
+    # 展开 wiki 魔术字（缓存保持原始；Infobox 子页里的 {{PAGENAME}} 指条目名）
+    wts = {t: expand_magic(wt, t) for t, wt in wts.items()}
+    ibox_wts = {t: expand_magic(wt, t.replace("Infobox:", "")) for t, wt in ibox_wts.items()}
 
     out = []
     seen = set()

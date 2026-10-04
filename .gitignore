@@ -4,3 +4,6 @@ scripts/cache/
 scripts/icon_fails.json
 .wrangler/
 .astro/
+_bak_tmp*/
+dist.bak/
+_push.log
