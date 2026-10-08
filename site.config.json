@@ -36,6 +36,16 @@
     {
       "href": "/search/",
       "label": "A-Z"
+    },
+    {
+      "href": "/complex-recipes/",
+      "label": "Complex Recipes",
+      "tool": true
+    },
+    {
+      "href": "/per-minute-output/",
+      "label": "Per Minute",
+      "tool": true
     }
   ],
   "sisterSites": [
