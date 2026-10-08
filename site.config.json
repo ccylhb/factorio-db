@@ -20,9 +20,48 @@
     "bad": "#c75146"
   },
   "nav": [
-    { "href": "/items/", "label": "Items" },
-    { "href": "/rankings/", "label": "Rankings" },
-    { "href": "/production-calculator/", "label": "Production Calculator", "tool": true },
-    { "href": "/search/", "label": "A-Z" }
-  ]
+    {
+      "href": "/items/",
+      "label": "Items"
+    },
+    {
+      "href": "/rankings/",
+      "label": "Rankings"
+    },
+    {
+      "href": "/production-calculator/",
+      "label": "Production Calculator",
+      "tool": true
+    },
+    {
+      "href": "/search/",
+      "label": "A-Z"
+    }
+  ],
+  "sisterSites": [
+    {
+      "name": "PalHub",
+      "url": "https://palhub.lootseer.com",
+      "blurb": "Breeding calculator, work suitability tables and base-building guides."
+    },
+    {
+      "name": "PalworldDB",
+      "url": "https://palworld.lootseer.com",
+      "blurb": "Pal stats, drops, breeding combos and work suitability."
+    },
+    {
+      "name": "VRisingDB",
+      "url": "https://vrising.lootseer.com",
+      "blurb": "All 64 V Blood bosses, gear tiers and drop tables."
+    },
+    {
+      "name": "GroundDB",
+      "url": "https://grounded.lootseer.com",
+      "blurb": "Weapons, armour, creatures and trinkets with a gear planner."
+    }
+  ],
+  "hubSite": {
+    "name": "LootSeer",
+    "url": "https://lootseer.com"
+  }
 }

@@ -1,0 +1,110 @@
+---
+/**
+ * Sister-site network block.
+ *
+ * Why this exists: the 20 subdomains were islands - zero cross-links between them, so
+ * a site with 3,809 impressions (conan) never passed any authority to one with 39
+ * (rimworld). This block is rendered on EVERY page via Base.astro, so each page becomes
+ * a distribution node. dofollow by design: these are the same-ownership sites.
+ *
+ * Data lives in site.config.json under "sisterSites" so adding a link never needs a
+ * code change - edit the JSON, rebuild.
+ *
+ * {{SISTER_FOOTER_STYLE}} lets a site override the visual treatment.
+ */
+const sites = (Astro.props.sites ?? []) as Array<{
+  name: string;
+  url: string;
+  blurb: string;
+  path?: string;
+}>;
+const hub = Astro.props.hub as { url: string; name: string } | undefined;
+const heading = Astro.props.heading ?? "More game databases";
+---
+
+{
+  (sites.length > 0 || hub) && (
+    <nav class="sister-block" aria-label="Other LootSeer databases">
+      {sites.length > 0 && (
+        <>
+          <h2 class="sister-heading">{heading}</h2>
+          <ul class="sister-grid">
+            {sites.map((s) => (
+              <li class="sister-item">
+                <a href={s.url + (s.path ?? "")}>
+                  <strong>{s.name}</strong>
+                  <span>{s.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {hub && (
+        <p class="sister-hub">
+          <a href={hub.url}>
+            <strong>{hub.name}</strong> &mdash; all {sites.length + 1} databases in one place
+          </a>
+        </p>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .sister-block {
+    margin: 3rem auto 1rem;
+    padding: 1.5rem 0 0;
+    max-width: 1100px;
+    border-top: 1px solid var(--border, #e2e0d9);
+  }
+  .sister-heading {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 0 0.9rem;
+    color: var(--muted, #6b6a66);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .sister-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.7rem;
+  }
+  .sister-item a {
+    display: block;
+    background: var(--bg-soft, #f5f4ef);
+    border: 1px solid var(--border, #e2e0d9);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: inherit;
+    text-decoration: none;
+    height: 100%;
+  }
+  .sister-item a:hover {
+    border-color: var(--accent, #7a5cff);
+  }
+  .sister-item strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+  .sister-item span {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted, #6b6a66);
+    line-height: 1.45;
+  }
+  .sister-hub {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+  }
+  @media (max-width: 640px) {
+    .sister-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
