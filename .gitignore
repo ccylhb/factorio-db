@@ -7,3 +7,4 @@ scripts/icon_fails.json
 _bak_tmp*/
 dist.bak/
 _push.log
+_dep*.log
