@@ -8,3 +8,6 @@ _bak_tmp*/
 dist.bak/
 _push.log
 _dep*.log
+build_*.log
+deploy_*.log
+src/data.bak_*/
